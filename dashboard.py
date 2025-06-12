@@ -163,7 +163,7 @@ elif page == "Ranking de Fatores":
     # Importância das features
     importances = model.feature_importances_
     ranking_df = pd.DataFrame({
-        "Fator": columns,
+        "Fator": load_columns,
         "Importância": importances
     }).sort_values(by="Importância", ascending=False)
 
