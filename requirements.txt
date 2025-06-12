@@ -7,3 +7,5 @@ matplotlib
 seaborn
 numpy
 fpdf
+pymongo[srv]
+pymongo
