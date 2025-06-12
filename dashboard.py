@@ -160,17 +160,22 @@ elif page == "Mapa de Risco":
 elif page == "Ranking de Fatores":
     st.header("📈 Ranking de Fatores Mais Influentes")
     
-    # Análise de correlação
-    correlations = df[["ideb","indicador_rendimento","alta_evasao","nivel_socioeconomico","nota_saeb_media_padronizada", "taxa_evasao_historica"]].corr()["talta_evasao"].abs().sort_values(ascending=False)
-    
-    # Gráfico de barras
-    fig_corr = px.bar(
-        x=correlations.index,
-        y=correlations.values,
-        title="Correlação dos Fatores com Risco de Evasão",
-        labels={"x": "Fatores", "y": "Correlação (Valor Absoluto)"}
+    # Importância das features
+    importances = model.feature_importances_
+    ranking_df = pd.DataFrame({
+        "Fator": columns,
+        "Importância": importances
+    }).sort_values(by="Importância", ascending=False)
+
+    # Gráfico
+    fig_importance = px.bar(
+        ranking_df.head(15),  # mostra os 15 mais importantes
+        x="Fator",
+        y="Importância",
+        title="Fatores que mais influenciam a evasão escolar (segundo o modelo)",
+        labels={"Importância": "Importância (modelo)", "Fator": "Variável"}
     )
-    st.plotly_chart(fig_corr, use_container_width=True)
+    st.plotly_chart(fig_importance, use_container_width=True)
     
     
 
