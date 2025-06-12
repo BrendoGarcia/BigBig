@@ -160,8 +160,7 @@ elif page == "Mapa de Risco":
 elif page == "Ranking de Fatores":
     st.header("📈 Ranking de Fatores Mais Influentes")
 
-
-    correlations = df[["ideb","indicador_rendimento","alta_evasao","nivel_socioeconomico","nota_saeb_media_padronizada", "taxa_evasao_historica"]].corr()["talta_evasao"].abs().sort_values(ascending=False)Add commentMore actions
+    correlations = df[["ideb","indicador_rendimento","nota_saeb_media_padronizada", "taxa_evasao_historica", "alta_evasao"]].corr()["alta_evasao"].abs().sort_values(ascending=False)
 
     # Gráfico de barras
     fig_corr = px.bar(
@@ -171,7 +170,7 @@ elif page == "Ranking de Fatores":
         labels={"x": "Fatores", "y": "Correlação (Valor Absoluto)"}
     )
     st.plotly_chart(fig_corr, use_container_width=True)
-    
+
     
     # Importância das features
     importances = model.feature_importances_
