@@ -8,8 +8,8 @@ import os
 # Config SMTP (exemplo Gmail)
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465
-SENDER_EMAIL = os.environ.get("GMAILBRENDO")
-SENDER_PASSWORD = os.environ.get("ACESSOAPP")
+SENDER_EMAIL = "brendofcg@gmail.com"
+SENDER_PASSWORD = "aqpl qvtz gzsk plil"
 
 if 'keys_seen' not in st.session_state:
     st.session_state['keys_seen'] = set()
