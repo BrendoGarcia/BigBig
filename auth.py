@@ -43,10 +43,13 @@ def send_email(to_email, subject, message):
 
 def register():
     st.subheader("Registrar novo usuário")
-    new_user = st.text_input("Usuário")
-    new_email = st.text_input("Email")
-    new_password = st.text_input("Senha", type="password")
-    if st.button("Registrar"):
+    new_user = st.text_input("Usuário", key="register_user")
+    new_email = st.text_input("Email", key="register_email")
+    new_password = st.text_input("Senha", type="password", key="register_password")
+    if st.button("Registrar", key="register_button"):
+        if not new_user or not new_email or not new_password:
+            st.error("Preencha todos os campos para registrar.")
+            return
         cursor.execute("SELECT * FROM users WHERE username=?", (new_user,))
         if cursor.fetchone():
             st.error("Usuário já existe!")
@@ -58,9 +61,12 @@ def register():
 
 def login():
     st.subheader("Login")
-    username = st.text_input("Usuário")
-    password = st.text_input("Senha", type="password")
-    if st.button("Entrar"):
+    username = st.text_input("Usuário", key="login_user")
+    password = st.text_input("Senha", type="password", key="login_password")
+    if st.button("Entrar", key="login_button"):
+        if not username or not password:
+            st.error("Preencha usuário e senha.")
+            return
         cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
         user = cursor.fetchone()
         if user:
@@ -78,8 +84,8 @@ def login():
 
 def verify_mfa():
     st.subheader("Verificação MFA")
-    code_input = st.text_input("Código enviado por email")
-    if st.button("Validar código"):
+    code_input = st.text_input("Código enviado por email", key="mfa_code_input")
+    if st.button("Validar código", key="mfa_validate_button"):
         username = st.session_state.get("username")
         if username:
             cursor.execute("SELECT mfa_code, mfa_expiry FROM users WHERE username=?", (username,))
@@ -108,12 +114,16 @@ def logout():
 def app():
     if st.session_state.get("mfa_passed"):
         st.write(f"Bem-vindo, {st.session_state['username']}!")
-        if st.button("Logout"):
+        if st.button("Logout", key="logout_button"):
             logout()
     elif st.session_state.get("mfa_sent"):
         verify_mfa()
-        if st.button("Logout"):
+        if st.button("Logout", key="logout_button_2"):
             logout()
     else:
-        register()
-        login()
+        # Escolher entre registro ou login com um seletor para melhorar UX
+        option = st.selectbox("Escolha uma opção", ["Login", "Registrar"], key="login_register_select")
+        if option == "Login":
+            login()
+        else:
+            register()
