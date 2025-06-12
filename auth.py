@@ -10,7 +10,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 # Variáveis de ambiente
-MONGO_URI = os.environ.get("mongodb+srv://admin:admin123@conteinner.h5b7p.mongodb.net/?retryWrites=true&w=majority&appName=Conteinner")  # Ex: mongodb+srv://user:senha@cluster.mongodb.net/dbname
+MONGO_URI = "mongodb+srv://admin:admin123@conteinner.h5b7p.mongodb.net/?retryWrites=true&w=majority&appName=Conteinner"  # Ex: mongodb+srv://user:senha@cluster.mongodb.net/dbname
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465
 SENDER_EMAIL = "brendofcg@gmail.com" 
