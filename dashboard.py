@@ -128,33 +128,31 @@ if page == "Dashboard Principal":
     
 
 elif page == "Mapa de Risco":
-    st.header("🗺️ Mapa de Escolas por Risco de Evasão")
-    
-    # Criar dados agregados por estado
-    df_estado = df.groupby("sigla_uf").agg({
-        "alta_evasao": "sum",
-        "taxa_evasao_historica": "mean",
-        "id_escola": "count"
-    }).reset_index()
-    df_estado.columns = ["Estado", "Escolas_Risco", "Taxa_Media_Evasao", "Total_Escolas"]
+    st.header("🗺️ Mapa de Risco de Evasão Escolar")
+
+    # ---- Título do Heatmap ----
+    st.subheader("🌡️ Heatmap de Escolas com Alta Probabilidade de Evasão")
+    st.markdown("Este mapa mostra a concentração geográfica das escolas com risco elevado de evasão escolar, com base nos dados mais recentes.")
+
+    # Mapa base centrado no Brasil
+    m = folium.Map(location=[-15.8, -47.9], zoom_start=4, tiles="CartoDB positron")
+
+    # Escolas com risco (alta_evasao == 1)
+    heat_data = df[df["alta_evasao"] == 1][["latitude", "longitude"]].dropna().values.tolist()
+
+    # Adiciona camada de calor
+    HeatMap(heat_data, radius=8, blur=15, min_opacity=0.3).add_to(m)
+
+    # Mostra o mapa no Streamlit
+    st_folium(m, width=700, height=500)
+
+    # ---- Tabela complementar (opcional) ----
+    st.subheader("📋 Quantidade de Escolas em Risco por Estado")
+    df_estado = df.groupby("sigla_uf").agg(
+        Escolas_Risco=("alta_evasao", "sum"),
+        Total_Escolas=("id_escola", "count")
+    ).reset_index()
     df_estado["Percentual_Risco"] = (df_estado["Escolas_Risco"] / df_estado["Total_Escolas"]) * 100
-    
-    # Mapa coroplético
-    fig_map = px.choropleth(
-        df_estado,
-        locations="Estado",
-        color="Percentual_Risco",
-        hover_name="Estado",
-        hover_data=["Escolas_Risco", "Total_Escolas", "Taxa_Media_Evasao"],
-        color_continuous_scale="Reds",
-        title="Percentual de Escolas em Risco por Estado",
-        locationmode="geojson-id"
-    )
-    
-    st.plotly_chart(fig_map, use_container_width=True)
-    
-    # Tabela de dados
-    st.subheader("Dados por Estado")
     st.dataframe(df_estado.sort_values("Percentual_Risco", ascending=False))
 
 elif page == "Ranking de Fatores":
