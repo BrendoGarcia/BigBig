@@ -1,51 +1,31 @@
 import streamlit as st
-import sqlite3
+from pymongo import MongoClient
+import os
 import smtplib
 import random
 import time
-import os
+import ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
-# Config SMTP (exemplo Gmail)
+# Variáveis de ambiente
+MONGO_URI = os.environ.get("mongodb+srv://admin:admin123@conteinner.h5b7p.mongodb.net/?retryWrites=true&w=majority&appName=Conteinner")  # Ex: mongodb+srv://user:senha@cluster.mongodb.net/dbname
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465
-SENDER_EMAIL = "brendofcg@gmail.com"
+SENDER_EMAIL = "brendofcg@gmail.com" 
 SENDER_PASSWORD = "aqpl qvtz gzsk plil"
 
-if 'keys_seen' not in st.session_state:
-    st.session_state['keys_seen'] = set()
-else:
-    print("Keys já criadas:", st.session_state['keys_seen'])
-
-
-if not SENDER_EMAIL or not SENDER_PASSWORD:
-    st.error("Variáveis de ambiente GMAILBRENDO e ACESSOAPP não estão definidas.")
-    st.stop()
-
-# Criar conexão com DB SQLite (arquivo local)
-conn = sqlite3.connect("users.db", check_same_thread=False)
-cursor = conn.cursor()
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS users (
-    username TEXT PRIMARY KEY,
-    email TEXT,
-    password TEXT,
-    mfa_code TEXT,
-    mfa_expiry INTEGER
-)
-""")
-conn.commit()
+# Conexão MongoDB
+client = MongoClient(MONGO_URI)
+db = client.get_database()  # assume o nome do banco do URI
+users_collection = db["users"]
 
 def send_email(to_email, subject, message):
-    import ssl
-    from email.mime.text import MIMEText
-    from email.mime.multipart import MIMEMultipart
-
     msg = MIMEMultipart()
     msg["From"] = SENDER_EMAIL
     msg["To"] = to_email
     msg["Subject"] = subject
     msg.attach(MIMEText(message, "plain"))
-
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT, context=context) as server:
         server.login(SENDER_EMAIL, SENDER_PASSWORD)
@@ -60,13 +40,16 @@ def register():
         if not new_user or not new_email or not new_password:
             st.error("Preencha todos os campos para registrar.")
             return
-        cursor.execute("SELECT * FROM users WHERE username=?", (new_user,))
-        if cursor.fetchone():
+        if users_collection.find_one({"username": new_user}):
             st.error("Usuário já existe!")
         else:
-            cursor.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-                           (new_user, new_email, new_password))
-            conn.commit()
+            users_collection.insert_one({
+                "username": new_user,
+                "email": new_email,
+                "password": new_password,
+                "mfa_code": None,
+                "mfa_expiry": None
+            })
             st.success("Usuário registrado! Faça login.")
 
 def login():
@@ -74,23 +57,15 @@ def login():
     username = st.text_input("Usuário", key="login_user")
     password = st.text_input("Senha", type="password", key="login_password")
     if st.button("Entrar", key="login_button"):
-        if not username or not password:
-            st.error("Preencha usuário e senha.")
-            return
-        cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
-        user = cursor.fetchone()
+        user = users_collection.find_one({"username": username, "password": password})
         if user:
             code = f"{random.randint(100000, 999999)}"
-            expiry = int(time.time()) + 3*24*3600
-            cursor.execute("UPDATE users SET mfa_code=?, mfa_expiry=? WHERE username=?", (code, expiry, username))
-            conn.commit()
-            try:
-                send_email(user[1], "Seu código de acesso", f"Seu código MFA é: {code}")
-                st.session_state["username"] = username
-                st.session_state["mfa_sent"] = True
-                st.success("Código MFA enviado ao seu email.")
-            except Exception as e:
-                st.error(f"Erro ao enviar email: {e}")
+            expiry = int(time.time()) + 3 * 24 * 3600
+            users_collection.update_one({"username": username}, {"$set": {"mfa_code": code, "mfa_expiry": expiry}})
+            send_email(user["email"], "Seu código de acesso", f"Seu código MFA é: {code}")
+            st.session_state["username"] = username
+            st.session_state["mfa_sent"] = True
+            st.success("Código MFA enviado ao seu email.")
         else:
             st.error("Usuário ou senha incorretos")
 
@@ -100,16 +75,14 @@ def verify_mfa():
     if st.button("Validar código", key="mfa_validate_button"):
         username = st.session_state.get("username")
         if username:
-            cursor.execute("SELECT mfa_code, mfa_expiry FROM users WHERE username=?", (username,))
-            row = cursor.fetchone()
-            if row:
-                code_db, expiry = row
+            user = users_collection.find_one({"username": username})
+            if user:
                 now = int(time.time())
-                if now > expiry:
+                if now > user.get("mfa_expiry", 0):
                     st.error("Código expirado, faça login novamente.")
                     st.session_state.clear()
                     st.experimental_rerun()
-                elif code_input == code_db:
+                elif code_input == user.get("mfa_code"):
                     st.success("Login confirmado!")
                     st.session_state["mfa_passed"] = True
                 else:
@@ -124,7 +97,6 @@ def logout():
     st.experimental_rerun()
 
 def app():
-    # Controle para evitar erros de múltiplos botões iguais
     if st.session_state.get("mfa_passed"):
         st.write(f"Bem-vindo, {st.session_state['username']}!")
         if st.button("Logout", key="logout_button"):
@@ -139,10 +111,3 @@ def app():
             login()
         else:
             register()
-
-if __name__ == "__main__":
-    if "mfa_passed" not in st.session_state:
-        st.session_state["mfa_passed"] = False
-    if "mfa_sent" not in st.session_state:
-        st.session_state["mfa_sent"] = False
-    app()
