@@ -3,12 +3,13 @@ import sqlite3
 import smtplib
 import random
 import time
+import os
 
 # Config SMTP (exemplo Gmail)
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465
-SENDER_EMAIL = GMAILBRENDO
-SENDER_PASSWORD = ACESSOAPP
+SENDER_EMAIL = os.environ.get("GMAILBRENDO")
+SENDER_PASSWORD = os.environ.get("ACESSOAPP"
 
 # Criar conexão com DB SQLite (arquivo local)
 conn = sqlite3.connect("users.db", check_same_thread=False)
