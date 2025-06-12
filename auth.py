@@ -1,5 +1,6 @@
 import streamlit as st
-from pymongo import MongoClient
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 import os
 import smtplib
 import random
@@ -16,7 +17,7 @@ SENDER_EMAIL = "brendofcg@gmail.com"
 SENDER_PASSWORD = "aqpl qvtz gzsk plil"
 
 # Conexão MongoDB
-client = MongoClient(MONGO_URI)
+client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
 db = client["meuapp"]  # assume o nome do banco do URI
 users_collection = db["users"]
 
