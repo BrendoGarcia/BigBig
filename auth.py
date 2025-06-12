@@ -9,7 +9,7 @@ import os
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465
 SENDER_EMAIL = os.environ.get("GMAILBRENDO")
-SENDER_PASSWORD = os.environ.get("ACESSOAPP"
+SENDER_PASSWORD = os.environ.get("ACESSOAPP")
 
 # Criar conexão com DB SQLite (arquivo local)
 conn = sqlite3.connect("users.db", check_same_thread=False)
