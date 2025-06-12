@@ -10,6 +10,9 @@ from fpdf import FPDF
 import plotly.io as pio
 import os
 import auth  # seu arquivo auth.py
+from streamlit_folium import st_folium
+import folium
+from folium.plugins import HeatMap
 
 if "mfa_passed" not in st.session_state or not st.session_state["mfa_passed"]:
     auth.app()
