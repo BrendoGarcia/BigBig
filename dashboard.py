@@ -176,8 +176,19 @@ elif page == "Ranking de Fatores":
         labels={"Importância": "Importância (modelo)", "Fator": "Variável"}
     )
     st.plotly_chart(fig_importance, use_container_width=True)
+
+    title="Corelação linear dos fatores de alta evasão",
+     # Análise de correlação
+    correlations = df[["ideb","indicador_rendimento","nivel_socioeconomico","nota_saeb_media_padronizada", "taxa_evasao_historica", "alta_evasao"]].corr()["alta_evasao"].abs().sort_values(ascending=False)
     
-    
+    # Gráfico de barras
+    fig_corr = px.bar(
+        x=correlations.index,
+        y=correlations.values,
+        title="Correlação dos Fatores com Risco de Evasão",
+        labels={"x": "Fatores", "y": "Correlação (Valor Absoluto)"}
+    )
+    st.plotly_chart(fig_corr, use_container_width=True)
 
 elif page == "Comparativo Redes":
     st.header("🏫 Comparativo entre Redes (Pública/Privada)")
