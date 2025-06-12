@@ -11,9 +11,9 @@ import plotly.io as pio
 import os
 import auth  # seu arquivo auth.py
 
-if "mfa_passed" not in st.session_state or not st.session_state.mfa_passed:
+if "mfa_passed" not in st.session_state or not st.session_state["mfa_passed"]:
     auth.app()
-    st.stop()  # para impedir que o dashboard continue carregando sem autenticação
+    st.stop()
 
 def salvar_grafico(fig, filename):
     pio.write_image(fig, filename, format='png', width=800, height=500)
