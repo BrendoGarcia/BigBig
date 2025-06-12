@@ -11,6 +11,10 @@ SMTP_PORT = 465
 SENDER_EMAIL = os.environ.get("GMAILBRENDO")
 SENDER_PASSWORD = os.environ.get("ACESSOAPP")
 
+if not SENDER_EMAIL or not SENDER_PASSWORD:
+    st.error("Variáveis de ambiente GMAILBRENDO e ACESSOAPP não estão definidas.")
+    st.stop()
+
 # Criar conexão com DB SQLite (arquivo local)
 conn = sqlite3.connect("users.db", check_same_thread=False)
 cursor = conn.cursor()
@@ -70,15 +74,17 @@ def login():
         cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
         user = cursor.fetchone()
         if user:
-            # Gerar código MFA válido por 3 dias (em segundos)
             code = f"{random.randint(100000, 999999)}"
             expiry = int(time.time()) + 3*24*3600
             cursor.execute("UPDATE users SET mfa_code=?, mfa_expiry=? WHERE username=?", (code, expiry, username))
             conn.commit()
-            send_email(user[1], "Seu código de acesso", f"Seu código MFA é: {code}")
-            st.session_state["username"] = username
-            st.session_state["mfa_sent"] = True
-            st.success("Código MFA enviado ao seu email.")
+            try:
+                send_email(user[1], "Seu código de acesso", f"Seu código MFA é: {code}")
+                st.session_state["username"] = username
+                st.session_state["mfa_sent"] = True
+                st.success("Código MFA enviado ao seu email.")
+            except Exception as e:
+                st.error(f"Erro ao enviar email: {e}")
         else:
             st.error("Usuário ou senha incorretos")
 
@@ -112,6 +118,7 @@ def logout():
     st.experimental_rerun()
 
 def app():
+    # Controle para evitar erros de múltiplos botões iguais
     if st.session_state.get("mfa_passed"):
         st.write(f"Bem-vindo, {st.session_state['username']}!")
         if st.button("Logout", key="logout_button"):
@@ -121,9 +128,15 @@ def app():
         if st.button("Logout", key="logout_button_2"):
             logout()
     else:
-        # Escolher entre registro ou login com um seletor para melhorar UX
         option = st.selectbox("Escolha uma opção", ["Login", "Registrar"], key="login_register_select")
         if option == "Login":
             login()
         else:
             register()
+
+if __name__ == "__main__":
+    if "mfa_passed" not in st.session_state:
+        st.session_state["mfa_passed"] = False
+    if "mfa_sent" not in st.session_state:
+        st.session_state["mfa_sent"] = False
+    app()
