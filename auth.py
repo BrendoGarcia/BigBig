@@ -17,7 +17,7 @@ SENDER_PASSWORD = "aqpl qvtz gzsk plil"
 
 # Conexão MongoDB
 client = MongoClient(MONGO_URI)
-db = client.get_database()  # assume o nome do banco do URI
+db = client["meuapp"]  # assume o nome do banco do URI
 users_collection = db["users"]
 
 def send_email(to_email, subject, message):
