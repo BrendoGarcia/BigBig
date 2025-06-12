@@ -1,170 +1,118 @@
 import streamlit as st
 import sqlite3
+import smtplib
 import random
 import time
-import smtplib
-from datetime import datetime, timedelta
 
-# --- Configurações SMTP para envio do código MFA ---
+# Config SMTP (exemplo Gmail)
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465
 SENDER_EMAIL = GMAILBRENDO
-SENDER_PASSWORD = ACESSOAPP  # senha do app gerada no gmail
+SENDER_PASSWORD = ACESSOAPP
 
-# --- Banco SQLite ---
+# Criar conexão com DB SQLite (arquivo local)
 conn = sqlite3.connect("users.db", check_same_thread=False)
-c = conn.cursor()
-
-# Criar tabela users (se não existir)
-c.execute("""
+cursor = conn.cursor()
+cursor.execute("""
 CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE,
-    name TEXT,
+    username TEXT PRIMARY KEY,
     email TEXT,
-    password TEXT
-)
-""")
-
-# Criar tabela mfa_codes (para guardar códigos e timestamp)
-c.execute("""
-CREATE TABLE IF NOT EXISTS mfa_codes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    code TEXT,
-    created_at INTEGER,
-    FOREIGN KEY(user_id) REFERENCES users(id)
+    password TEXT,
+    mfa_code TEXT,
+    mfa_expiry INTEGER
 )
 """)
 conn.commit()
 
-# --- Funções banco ---
-def add_user(username, name, email, password):
-    try:
-        c.execute("INSERT INTO users (username, name, email, password) VALUES (?, ?, ?, ?)",
-                  (username, name, email, password))
-        conn.commit()
-        return True
-    except sqlite3.IntegrityError:
-        return False
+def send_email(to_email, subject, message):
+    import ssl
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
 
-def get_user(username):
-    c.execute("SELECT id, username, name, email, password FROM users WHERE username = ?", (username,))
-    return c.fetchone()
+    msg = MIMEMultipart()
+    msg["From"] = SENDER_EMAIL
+    msg["To"] = to_email
+    msg["Subject"] = subject
+    msg.attach(MIMEText(message, "plain"))
 
-def save_mfa_code(user_id, code):
-    now = int(time.time())
-    c.execute("INSERT INTO mfa_codes (user_id, code, created_at) VALUES (?, ?, ?)", (user_id, code, now))
-    conn.commit()
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT, context=context) as server:
+        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+        server.sendmail(SENDER_EMAIL, to_email, msg.as_string())
 
-def get_latest_mfa_code(user_id):
-    c.execute("SELECT code, created_at FROM mfa_codes WHERE user_id = ? ORDER BY created_at DESC LIMIT 1", (user_id,))
-    return c.fetchone()
-
-def clear_old_codes(user_id):
-    # Opcional: deletar códigos antigos
-    c.execute("DELETE FROM mfa_codes WHERE user_id = ?", (user_id,))
-    conn.commit()
-
-# --- Função envio email ---
-def send_email(to_email, subject, body):
-    try:
-        with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as smtp:
-            smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
-            msg = f"Subject: {subject}\n\n{body}"
-            smtp.sendmail(SENDER_EMAIL, to_email, msg)
-        return True
-    except Exception as e:
-        st.error(f"Erro ao enviar email: {e}")
-        return False
-
-# --- App Streamlit ---
-def signup():
-    st.header("Cadastro")
-    username = st.text_input("Usuário")
-    name = st.text_input("Nome Completo")
-    email = st.text_input("Email")
-    password = st.text_input("Senha", type="password")
-    confirm_password = st.text_input("Confirme a senha", type="password")
-
-    if st.button("Cadastrar"):
-        if not username or not name or not email or not password:
-            st.error("Preencha todos os campos")
-            return
-        if password != confirm_password:
-            st.error("Senhas não coincidem")
-            return
-        if add_user(username, name, email, password):
-            st.success("Usuário cadastrado com sucesso! Faça login.")
+def register():
+    st.subheader("Registrar novo usuário")
+    new_user = st.text_input("Usuário")
+    new_email = st.text_input("Email")
+    new_password = st.text_input("Senha", type="password")
+    if st.button("Registrar"):
+        cursor.execute("SELECT * FROM users WHERE username=?", (new_user,))
+        if cursor.fetchone():
+            st.error("Usuário já existe!")
         else:
-            st.error("Usuário já existe")
+            cursor.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+                           (new_user, new_email, new_password))
+            conn.commit()
+            st.success("Usuário registrado! Faça login.")
 
 def login():
-    st.header("Login")
+    st.subheader("Login")
     username = st.text_input("Usuário")
     password = st.text_input("Senha", type="password")
-
     if st.button("Entrar"):
-        user = get_user(username)
-        if user is None:
-            st.error("Usuário não encontrado")
-            return
-        if password != user[4]:
-            st.error("Senha incorreta")
-            return
-        
-        user_id = user[0]
-        user_name = user[2]
-        user_email = user[3]
-
-        # MFA
-        now_ts = int(time.time())
-        mfa_data = get_latest_mfa_code(user_id)
-        code_valid = False
-
-        # Timeout 3 dias = 3*24*3600
-        timeout_seconds = 3 * 24 * 3600
-
-        if mfa_data:
-            code, created_at = mfa_data
-            if now_ts - created_at < timeout_seconds:
-                code_valid = True
-            else:
-                # Código expirou, limpar
-                clear_old_codes(user_id)
-                code_valid = False
-
-        if "mfa_passed" not in st.session_state:
-            st.session_state.mfa_passed = False
-
-        if not st.session_state.mfa_passed or not code_valid:
-            if not code_valid:
-                # Gerar código novo
-                code = f"{random.randint(100000, 999999)}"
-                save_mfa_code(user_id, code)
-                send_email(user_email, "Seu código de acesso", f"Olá {user_name}, seu código de acesso é: {code}")
-                st.info("Código MFA enviado para seu email")
-
-            codigo_input = st.text_input("Digite o código enviado no email")
-            if st.button("Validar código"):
-                if codigo_input == code:
-                    st.session_state.mfa_passed = True
-                    st.success(f"Bem-vindo, {user_name}! Você está autenticado.")
-                else:
-                    st.error("Código incorreto")
-
+        cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
+        user = cursor.fetchone()
+        if user:
+            # Gerar código MFA válido por 3 dias (em segundos)
+            code = f"{random.randint(100000, 999999)}"
+            expiry = int(time.time()) + 3*24*3600
+            cursor.execute("UPDATE users SET mfa_code=?, mfa_expiry=? WHERE username=?", (code, expiry, username))
+            conn.commit()
+            send_email(user[1], "Seu código de acesso", f"Seu código MFA é: {code}")
+            st.session_state["username"] = username
+            st.session_state["mfa_sent"] = True
+            st.success("Código MFA enviado ao seu email.")
         else:
-            st.session_state.mfa_passed = True
-            st.success(f"Bem-vindo, {user_name}! Você está autenticado.")
+            st.error("Usuário ou senha incorretos")
 
-def main():
-    st.title("App com Cadastro + Login + MFA via Email")
+def verify_mfa():
+    st.subheader("Verificação MFA")
+    code_input = st.text_input("Código enviado por email")
+    if st.button("Validar código"):
+        username = st.session_state.get("username")
+        if username:
+            cursor.execute("SELECT mfa_code, mfa_expiry FROM users WHERE username=?", (username,))
+            row = cursor.fetchone()
+            if row:
+                code_db, expiry = row
+                now = int(time.time())
+                if now > expiry:
+                    st.error("Código expirado, faça login novamente.")
+                    st.session_state.clear()
+                    st.experimental_rerun()
+                elif code_input == code_db:
+                    st.success("Login confirmado!")
+                    st.session_state["mfa_passed"] = True
+                else:
+                    st.error("Código inválido.")
+            else:
+                st.error("Usuário não encontrado.")
+        else:
+            st.error("Faça login primeiro.")
 
-    menu = st.sidebar.selectbox("Menu", ["Login", "Cadastro"])
-    if menu == "Login":
-        login()
+def logout():
+    st.session_state.clear()
+    st.experimental_rerun()
+
+def app():
+    if st.session_state.get("mfa_passed"):
+        st.write(f"Bem-vindo, {st.session_state['username']}!")
+        if st.button("Logout"):
+            logout()
+    elif st.session_state.get("mfa_sent"):
+        verify_mfa()
+        if st.button("Logout"):
+            logout()
     else:
-        signup()
-
-if __name__ == "__main__":
-    main()
+        register()
+        login()
