@@ -9,3 +9,5 @@ numpy
 fpdf
 pymongo[srv]
 pymongo
+folium
+streamlit-folium
