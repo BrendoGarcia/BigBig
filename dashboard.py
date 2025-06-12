@@ -161,7 +161,7 @@ elif page == "Ranking de Fatores":
     st.header("📈 Ranking de Fatores Mais Influentes")
     
     # Análise de correlação
-    correlations = df[["ideb","indicador_rendimento","nivel_socioeconomico","nota_saeb_media_padronizada", "taxa_evasao_historica"]].corr()["taxa_evasao_historica"].abs().sort_values(ascending=False)
+    correlations = df[["ideb","indicador_rendimento","alta_evasao","nivel_socioeconomico","nota_saeb_media_padronizada", "taxa_evasao_historica"]].corr()["talta_evasao"].abs().sort_values(ascending=False)
     
     # Gráfico de barras
     fig_corr = px.bar(
