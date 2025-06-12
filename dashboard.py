@@ -177,7 +177,7 @@ elif page == "Ranking de Fatores":
     )
     st.plotly_chart(fig_importance, use_container_width=True)
 
-    title="Corelação linear dos fatores de alta evasão",
+    
      # Análise de correlação
     correlations = df[["ideb","indicador_rendimento","nivel_socioeconomico","nota_saeb_media_padronizada", "taxa_evasao_historica", "alta_evasao"]].corr()["alta_evasao"].abs().sort_values(ascending=False)
     
@@ -185,7 +185,7 @@ elif page == "Ranking de Fatores":
     fig_corr = px.bar(
         x=correlations.index,
         y=correlations.values,
-        title="Correlação dos Fatores com Risco de Evasão",
+        title="Correlação linear dos Fatores com Risco de Evasão",
         labels={"x": "Fatores", "y": "Correlação (Valor Absoluto)"}
     )
     st.plotly_chart(fig_corr, use_container_width=True)
