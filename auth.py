@@ -11,6 +11,12 @@ SMTP_PORT = 465
 SENDER_EMAIL = os.environ.get("GMAILBRENDO")
 SENDER_PASSWORD = os.environ.get("ACESSOAPP")
 
+if 'keys_seen' not in st.session_state:
+    st.session_state['keys_seen'] = set()
+else:
+    print("Keys já criadas:", st.session_state['keys_seen'])
+
+
 if not SENDER_EMAIL or not SENDER_PASSWORD:
     st.error("Variáveis de ambiente GMAILBRENDO e ACESSOAPP não estão definidas.")
     st.stop()
