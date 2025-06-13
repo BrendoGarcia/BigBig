@@ -141,7 +141,7 @@ elif page == "Mapa de Risco":
     m = folium.Map(location=[-15.8, -47.9], zoom_start=4, tiles="CartoDB positron")
 
     # Escolas com risco (alta_evasao == 1)
-    heat_data = df[df["alta_evasao"] == 1][["id_escola_latitude", "id_escola_longitude"]].dropna().values.tolist()
+    heat_data = df[df["alta_evasao"] == 1][["id_escola_latitude", "id_escola_longitude"]].dropna().sample(n=2000).values.tolist()
 
     # Adiciona camada de calor
     HeatMap(heat_data, radius=8, blur=15, min_opacity=0.3).add_to(m)
