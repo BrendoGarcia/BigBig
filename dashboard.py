@@ -234,8 +234,8 @@ elif page == "Simulador de Cenários":
     
     with col1:
         ideb_sim = st.slider("IDEB", min_value=0.0, max_value=10.0, value=5.0, step=0.1)
-        nse_sim = st.slider("Nível Socioeconômico", min_value=10.0, max_value=70.0, value=50.0, step=1.0)
-    
+        nse_sim = st.slider("Nível Socioeconômico", min_value=10.0, max_value=70.0, value=50.0, step=0.1)
+        taxa_historica = st.slider("Média de Evasão Historica"), min_value=00.1, max_value=100.0, value=20.0, step=00.1)
     with col2:
         uf_sim = st.selectbox("Estado", df["sigla_uf"].unique())
         rede_sim = st.selectbox("Rede", df["rede"].unique())
@@ -248,7 +248,7 @@ elif page == "Simulador de Cenários":
         "nivel_socioeconomico": [nse_sim],
         "sigla_uf": [uf_sim],
         "rede": [rede_sim],
-        "taxa_evasao_historica": [df["taxa_evasao_historica"].mean()]
+        "taxa_evasao_historica": [taxa_historica]
     })
 
     # Aplicar one-hot encoding
