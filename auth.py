@@ -9,12 +9,17 @@ import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+# Variavens de secretas
+mongo_atlas = os.environ.get("URLBANCO")
+gmail = os.environ.ger("GMAIL")
+senhaacesso = os.environ.get("SENHAGMAIL")
+
 # Variáveis de ambiente
-MONGO_URI = "mongodb+srv://admin:admin123@conteinner.h5b7p.mongodb.net/?retryWrites=true&w=majority&appName=Conteinner"  # Ex: mongodb+srv://user:senha@cluster.mongodb.net/dbname
+MONGO_URI = "{mongo_atlas}"  # Ex: mongodb+srv://user:senha@cluster.mongodb.net/dbname
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465
-SENDER_EMAIL = "brendofcg@gmail.com" 
-SENDER_PASSWORD = "aqpl qvtz gzsk plil"
+SENDER_EMAIL = "{gmail}" 
+SENDER_PASSWORD = "{senhaacesso}"
 
 # Conexão MongoDB
 client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
