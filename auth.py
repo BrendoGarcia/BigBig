@@ -11,7 +11,7 @@ from email.mime.multipart import MIMEMultipart
 
 # Variavens de secretas
 mongo_atlas = os.environ.get("URLBANCO")
-gmail = os.environ.ger("GMAIL")
+gmail = os.environ.get("GMAIL")
 senhaacesso = os.environ.get("SENHAGMAIL")
 
 # Variáveis de ambiente
