@@ -15,11 +15,11 @@ gmail = os.environ.get("GMAIL")
 senhaacesso = os.environ.get("SENHAGMAIL")
 
 # Variáveis de ambiente
-MONGO_URI = "{mongo_atlas}"  # Ex: mongodb+srv://user:senha@cluster.mongodb.net/dbname
+MONGO_URI = mongo_atlas  # Ex: mongodb+srv://user:senha@cluster.mongodb.net/dbname
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465
-SENDER_EMAIL = "{gmail}" 
-SENDER_PASSWORD = "{senhaacesso}"
+SENDER_EMAIL = gmail
+SENDER_PASSWORD = senhaacesso
 
 # Conexão MongoDB
 client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
