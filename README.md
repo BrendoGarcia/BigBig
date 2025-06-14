@@ -100,19 +100,11 @@ streamlit run dashboard.py --server.port 8501 --server.address 0.0.0.0
 - Taxa de evasão histórica regional
 - Estado (UF)
 - Rede de ensino (pública/privada)
-
-## Resultados Principais
-
-- **131.021 escolas analisadas**
-- **64.630 escolas identificadas com risco crítico**
-- **Acurácia do modelo: 100%**
-- **Taxa média de evasão: 6,56%**
-- **IDEB médio: 5,16**
-
+- Latitude e Longitude
+  
 ## Modelo de Machine Learning
 
 - **Algoritmo:** Gradient Boosting Classifier
-- **Métricas:** Precision: 100%, Recall: 100%, F1-Score: 100%
 - **Variável alvo:** Alta evasão (>limiar dinâmico baseado na mediana)
 
 ## Arquivos de Saída
@@ -162,25 +154,13 @@ prediction = model.predict(data_encoded)
 probability = model.predict_proba(data_encoded)[:, 1]
 ```
 
-## Limitações
-
-1. **Dados temporais desalinhados** (IDEB 2021, NSE 2015)
-2. **Agregação regional** da taxa de evasão
-3. **Possível overfitting** (performance de 100%)
-
-## Recomendações
-
-1. Atualizar dados de nível socioeconômico
-2. Incluir dados de infraestrutura escolar
-3. Validar com dados externos
-4. Implementar validação cruzada temporal
-
 ## Suporte
 
 Para dúvidas ou problemas:
 1. Verifique se todas as dependências estão instaladas
 2. Confirme que os arquivos de dados estão no diretório correto
 3. Execute os testes com `python test_system.py`
+4. Ou entre em contato ao email brendofcg.2013@gmail.com
 
 ## Licença
 
