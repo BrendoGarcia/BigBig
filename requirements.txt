@@ -11,3 +11,4 @@ pymongo[srv]
 pymongo
 folium
 streamlit-folium
+python-dotenv
