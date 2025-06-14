@@ -4,7 +4,7 @@
 
 Este sistema utiliza Machine Learning para prever quais escolas terão alta taxa de evasão no ensino médio. O projeto inclui análise de dados educacionais, modelo preditivo e dashboard interativo desenvolvido em Streamlit.
 
-## Estrutura do Projeto
+## Estrutura do Projeto 
 
 ```
 ProjetoDash/
