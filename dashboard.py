@@ -92,7 +92,7 @@ else:
                                 "Comparativo Redes", "Simulador de Cenários"])
 
 if page == "Dashboard Principal":
-    auth.log_action(username, "Pagina Principal", "Navegando")
+    auth.log_action(st.session_state["username"], "Pagina Principal", "Navegando")
     st.header("📊 Dashboard Principal")
     
     # Métricas principais
