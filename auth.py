@@ -25,6 +25,15 @@ SENDER_PASSWORD = senhaacesso
 client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
 db = client["meuapp"]  # assume o nome do banco do URI
 users_collection = db["users"]
+logs_collection = db["logs"]
+
+def log_action(username, action, details=None):
+    logs_collection.insert_one({
+        "username": username,
+        "action": action,
+        "details": details,
+        "timestamp": datetime.utcnow()
+    })
 
 def send_email(to_email, subject, message):
     msg = MIMEMultipart()
