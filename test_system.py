@@ -15,7 +15,7 @@ def test_model_performance():
 
     X = df.drop(columns=[
         "id_escola", "alta_evasao", "id_escola_nome", "id_municipio_nome",
-        "sigla_uf_nome", "id_municipio", "inse_classificacao_2014", "inse_classificacao_2015"
+        "sigla_uf_nome", "id_municipio", "inse_classificacao_2014", "inse_classificacao_2015","taxa_evasao_historica"
     ])
     y = df["alta_evasao"]
 
