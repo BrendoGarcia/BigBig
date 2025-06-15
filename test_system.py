@@ -74,6 +74,7 @@ def test_dashboard_functionality():
         import streamlit as st
         df = pd.read_csv("https://storage.googleapis.com/bigdataatividade/processed_data.csv")
         model = joblib.load("evasion_model.joblib")
+        feature_cols = joblib.load("feature_columns.pkl")
 
         sample_data = pd.DataFrame({
             "ideb": [5.0],
@@ -84,14 +85,19 @@ def test_dashboard_functionality():
         })
 
         sample_encoded = pd.get_dummies(sample_data, columns=["sigla_uf", "rede"], drop_first=False)
-        df_encoded = pd.get_dummies(df[["ideb", "nivel_socioeconomico", "taxa_evasao_historica", "sigla_uf", "rede"]],
-                                    columns=["sigla_uf", "rede"], drop_first=True)
 
-        for col in df_encoded.columns:
+        # Adicionar colunas ausentes com zero
+        for col in feature_cols:
             if col not in sample_encoded.columns:
                 sample_encoded[col] = 0
 
-        sample_encoded = sample_encoded[df_encoded.columns]
+        # Reordenar as colunas
+        sample_encoded = sample_encoded[feature_cols]
+
+        # Imputar valores ausentes (caso existam)
+        numeric_cols = sample_encoded.select_dtypes(include=["float64", "int64"]).columns
+        sample_encoded[numeric_cols] = sample_encoded[numeric_cols].fillna(sample_encoded[numeric_cols].mean())
+
         prediction = model.predict(sample_encoded)[0]
         probability = model.predict_proba(sample_encoded)[0][1]
 
@@ -101,6 +107,7 @@ def test_dashboard_functionality():
     except Exception as e:
         print(f"✗ Erro no dashboard: {str(e)}")
         return False
+
 
 
 def generate_test_report():
