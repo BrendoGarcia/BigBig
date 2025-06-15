@@ -83,7 +83,7 @@ def test_dashboard_functionality():
             "rede": ["pública"]
         })
 
-        sample_encoded = pd.get_dummies(sample_data, columns=["sigla_uf", "rede"], drop_first=True)
+        sample_encoded = pd.get_dummies(sample_data, columns=["sigla_uf", "rede"], drop_first=False)
         df_encoded = pd.get_dummies(df[["ideb", "nivel_socioeconomico", "taxa_evasao_historica", "sigla_uf", "rede"]],
                                     columns=["sigla_uf", "rede"], drop_first=True)
 
