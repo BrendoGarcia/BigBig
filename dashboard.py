@@ -80,7 +80,7 @@ if st.session_state["username"] == "Brendo":
     st.sidebar.title("Navegação")
     page = st.sidebar.selectbox("Escolha uma página:", 
                                ["Dashboard Principal", "Mapa de Risco", "Ranking de Fatores", 
-                                "Comparativo Redes", "Simulador de Cenários"])
+                                "Comparativo Redes", "Simulador de Cenários","🔒 Painel de Auditoria"])
 
 
 
