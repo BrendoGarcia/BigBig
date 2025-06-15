@@ -65,7 +65,7 @@ def register():
                 "mfa_code": None,
                 "mfa_expiry": None
             })
-            log_action(new_user, "registro"
+            log_action(new_user, "registro")
             st.success("Usuário registrado! Faça login.")
 
 def login():
