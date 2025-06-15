@@ -7,19 +7,32 @@ from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
 def test_model_performance():
     print("=== TESTE DE PERFORMANCE DO MODELO ===")
 
     df = pd.read_csv("https://storage.googleapis.com/bigdataatividade/processed_data.csv")
     model = joblib.load("evasion_model.joblib")
+    feature_cols = joblib.load("feature_columns.pkl")
 
     X = df.drop(columns=[
         "id_escola", "alta_evasao", "id_escola_nome", "id_municipio_nome",
-        "sigla_uf_nome", "id_municipio", "inse_classificacao_2014", "inse_classificacao_2015","taxa_evasao_historica"
+        "sigla_uf_nome", "id_municipio", "inse_classificacao_2014", "inse_classificacao_2015", "taxa_evasao_historica"
     ])
     y = df["alta_evasao"]
 
     X_encoded = pd.get_dummies(X, columns=["sigla_uf", "rede"], drop_first=False)
+
+    # Garantir que todas as colunas do treino estejam presentes no teste
+    for col in feature_cols:
+        if col not in X_encoded.columns:
+            X_encoded[col] = 0
+    X_encoded = X_encoded[feature_cols]
+
+    # Imputar valores ausentes com média
+    numeric_cols = X_encoded.select_dtypes(include=["float64", "int64"]).columns
+    X_encoded[numeric_cols] = X_encoded[numeric_cols].fillna(X_encoded[numeric_cols].mean())
+
     y_pred = model.predict(X_encoded)
     y_prob = model.predict_proba(X_encoded)[:, 1]
 
@@ -111,3 +124,4 @@ if __name__ == "__main__":
     sucesso = generate_test_report()
     if not sucesso:
         exit(1)
+
