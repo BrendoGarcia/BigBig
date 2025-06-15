@@ -75,11 +75,21 @@ def load_model():
 df = load_data()
 model, load_columns = load_model()
 
+# Siderbar Admin
+if st.session_state["username"] == "Brendo":
+    st.sidebar.title("Navegação")
+    page = st.sidebar.selectbox("Escolha uma página:", 
+                               ["Dashboard Principal", "Mapa de Risco", "Ranking de Fatores", 
+                                "Comparativo Redes", "Simulador de Cenários"])
+
+
+
 # Sidebar para navegação
-st.sidebar.title("Navegação")
-page = st.sidebar.selectbox("Escolha uma página:", 
-                           ["Dashboard Principal", "Mapa de Risco", "Ranking de Fatores", 
-                            "Comparativo Redes", "Simulador de Cenários"])
+else:
+    st.sidebar.title("Navegação")
+    page = st.sidebar.selectbox("Escolha uma página:", 
+                               ["Dashboard Principal", "Mapa de Risco", "Ranking de Fatores", 
+                                "Comparativo Redes", "Simulador de Cenários"])
 
 if page == "Dashboard Principal":
     st.header("📊 Dashboard Principal")
@@ -311,6 +321,20 @@ elif page == "Simulador de Cenários":
         
     except Exception as e:
         st.error(f"Erro na predição: {str(e)}")
+
+if page == "🔒 Painel de Auditoria":
+    st.header("📋 Painel de Logs de Auditoria")
+    logs = pd.DataFrame(list(auth.db["logs"].find().sort("timestamp", -1)))
+    if not logs.empty:
+        logs["timestamp"] = pd.to_datetime(logs["timestamp"])
+        usuarios = logs["username"].unique().tolist()
+        usuario_filtro = st.selectbox("Filtrar por usuário:", ["Todos"] + usuarios)
+        if usuario_filtro != "Todos":
+            logs = logs[logs["username"] == usuario_filtro]
+        logs = logs.sort_values("timestamp", ascending=False)
+        st.dataframe(logs[["timestamp", "username", "action", "details"]])
+    else:
+        st.info("Nenhum log registrado ainda.")
 
 ### Apartir daqui não tenho certeza mais de nada pode ser que funcione ou não.
 
