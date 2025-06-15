@@ -65,6 +65,7 @@ def register():
                 "mfa_code": None,
                 "mfa_expiry": None
             })
+            log_action(new_user, "registro"
             st.success("Usuário registrado! Faça login.")
 
 def login():
@@ -79,10 +80,12 @@ def login():
             users_collection.update_one({"username": username}, {"$set": {"mfa_code": code, "mfa_expiry": expiry}})
             send_email(user["email"], "Seu código de acesso", f"Seu código MFA é: {code}")
             st.session_state["username"] = username
-            st.session_state["mfa_sent"] = True
+            st.session_state["mfa_sent"] = 
+            log_action(username, "login_sucesso")
             st.success("Código MFA enviado ao seu email.")
         else:
             st.error("Usuário ou senha incorretos")
+            log_action(username, "login_falha")
 
 def verify_mfa():
     st.subheader("Verificação MFA")
@@ -96,18 +99,22 @@ def verify_mfa():
                 if now > user.get("mfa_expiry", 0):
                     st.error("Código expirado, faça login novamente.")
                     st.session_state.clear()
+                    log_action(username, "mfa_expirado")
                     st.experimental_rerun()
                 elif code_input == user.get("mfa_code"):
                     st.success("Login confirmado!")
                     st.session_state["mfa_passed"] = True
+                    log_action(username, "mfa_sucesso")
                 else:
                     st.error("Código inválido.")
+                    log_action(username, "mfa_codigo_invalido")
             else:
                 st.error("Usuário não encontrado.")
         else:
             st.error("Faça login primeiro.")
 
 def logout():
+    log_action(st.session_state.get("username", "unknown"), "logout")
     st.session_state.clear()
     st.experimental_rerun()
 
