@@ -80,7 +80,7 @@ def login():
             users_collection.update_one({"username": username}, {"$set": {"mfa_code": code, "mfa_expiry": expiry}})
             send_email(user["email"], "Seu código de acesso", f"Seu código MFA é: {code}")
             st.session_state["username"] = username
-            st.session_state["mfa_sent"] = 
+            st.session_state["mfa_sent"] = True
             log_action(username, "login_sucesso")
             st.success("Código MFA enviado ao seu email.")
         else:
