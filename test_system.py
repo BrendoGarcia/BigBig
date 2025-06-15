@@ -19,7 +19,7 @@ def test_model_performance():
     ])
     y = df["alta_evasao"]
 
-    X_encoded = pd.get_dummies(X, columns=["sigla_uf", "rede"], drop_first=True)
+    X_encoded = pd.get_dummies(X, columns=["sigla_uf", "rede"], drop_first=False)
     y_pred = model.predict(X_encoded)
     y_prob = model.predict_proba(X_encoded)[:, 1]
 
