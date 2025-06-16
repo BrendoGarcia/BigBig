@@ -142,6 +142,7 @@ if page == "Dashboard Principal":
     
 
 elif page == "Mapa de Risco":
+    auth.log_action(st.session_state["username"], "Mapa de Risco", "Navegando")
     st.header("🗺️ Mapa de Risco de Evasão Escolar")
 
     # ---- Título do Heatmap ----
@@ -170,6 +171,7 @@ elif page == "Mapa de Risco":
     st.dataframe(df_estado.sort_values("Percentual_Risco", ascending=False))
 
 elif page == "Ranking de Fatores":
+    auth.log_action(st.session_state["username"], "Ranking de Fatores", "Navegando")
     st.header("📈 Ranking de Fatores Mais Influentes")
    
     # Importância das features
@@ -203,6 +205,7 @@ elif page == "Ranking de Fatores":
     st.plotly_chart(fig_corr, use_container_width=True)
 
 elif page == "Comparativo Redes":
+    auth.log_action(st.session_state["username"], "Comparativo Redes", "Navegando")
     st.header("🏫 Comparativo entre Redes (Pública/Privada)")
     
     # Análise por rede
@@ -236,6 +239,7 @@ elif page == "Comparativo Redes":
     st.dataframe(df_rede)
 
 elif page == "Simulador de Cenários":
+    auth.log_action(st.session_state["username"], "Simulador de Cenários", "Navegando")
     st.header("🎯 Simulador de Cenários")
     
     st.markdown("Use os controles abaixo para simular diferentes cenários e ver a predição de risco de evasão:")
@@ -324,6 +328,7 @@ elif page == "Simulador de Cenários":
         st.error(f"Erro na predição: {str(e)}")
 
 if page == "🔒 Painel de Auditoria":
+    auth.log_action(st.session_state["username"], "Painel de Auditoria", "Navegando")
     st.header("📋 Painel de Logs de Auditoria")
     logs = pd.DataFrame(list(auth.db["logs"].find().sort("timestamp", -1)))
     if not logs.empty:
