@@ -140,16 +140,16 @@ if page == "Dashboard Principal":
     st.markdown("### 📄 Gerar Relatório em PDF")
 
     if st.button("Gerar Relatório"):
-    try:
-        escolas_risco = df[df["alta_evasao"] == 1].shape[0]
-        total_escolas = df.shape[0]
-        perc_risco = (escolas_risco / total_escolas) * 100
-        resumo_texto = (
-            f"Total de escolas analisadas: {total_escolas:,}.\n"
-            f"Número de escolas em risco de evasão: {escolas_risco:,} "
-            f"({perc_risco:.2f}%).\n"
-            "Esses dados refletem a situação atual considerando IDEB, nível socioeconômico, "
-            "histórico de evasão e outros fatores analisados pelo modelo preditivo."
+        try:
+            escolas_risco = df[df["alta_evasao"] == 1].shape[0]
+            total_escolas = df.shape[0]
+            perc_risco = (escolas_risco / total_escolas) * 100
+            resumo_texto = (
+                f"Total de escolas analisadas: {total_escolas:,}.\n"
+                f"Número de escolas em risco de evasão: {escolas_risco:,} "
+                f"({perc_risco:.2f}%).\n"
+                "Esses dados refletem a situação atual considerando IDEB, nível socioeconômico, "
+                "histórico de evasão e outros fatores analisados pelo modelo preditivo."
         )
 
         gerar_pdf(df, fig_uf, fig_rede, resumo_texto)
