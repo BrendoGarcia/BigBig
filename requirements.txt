@@ -12,3 +12,4 @@ pymongo
 folium
 streamlit-folium
 python-dotenv
+kaleido
