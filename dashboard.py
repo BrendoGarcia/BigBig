@@ -21,32 +21,49 @@ if "mfa_passed" not in st.session_state or not st.session_state["mfa_passed"]:
 def salvar_grafico(fig, filename):
     pio.write_image(fig, filename, format='png', width=800, height=500)
 
-def gerar_pdf(df, fig1, fig2, resumo_texto, tabela_resumo=None):
+def gerar_pdf(df, fig1, fig2, fig3, fig4, fig5, fig6, resumo_texto, tabela_resumo=None):
+    # Página 1
     salvar_grafico(fig1, "grafico1.png")
     salvar_grafico(fig2, "grafico2.png")
-
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
     pdf.cell(200, 10, txt="Relatório de Evasão Escolar", ln=True, align="C")
-
-    # Texto com resumo
     pdf.ln(10)
     pdf.multi_cell(0, 10, resumo_texto)
+    pdf.ln(5)
+    pdf.image("grafico1.png", x=10, y=pdf.get_y(), w=180)
+    pdf.ln(90)
+    pdf.image("grafico2.png", x=10, y=pdf.get_y(), w=180)
 
-    # Gráficos
-    pdf.image("grafico1.png", x=10, y=40, w=180)
-    pdf.ln(80)
-    pdf.image("grafico2.png", x=10, y=130, w=180)
-    pdf.ln(85)
+    # Página 2 - Fatores
+    salvar_grafico(fig3, "grafico3.png")
+    salvar_grafico(fig4, "grafico4.png")
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, txt="Ranking de Fatores e Correlações", ln=True, align="C")
+    pdf.ln(10)
+    pdf.image("grafico3.png", x=10, y=30, w=180)
+    pdf.ln(90)
+    pdf.image("grafico4.png", x=10, y=pdf.get_y(), w=180)
 
-    # Adicionar tabela com dados (exemplo limitado)
+    # Página 3 - Comparativo Redes
+    salvar_grafico(fig5, "grafico5.png")
+    salvar_grafico(fig6, "grafico6.png")
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, txt="Comparativo entre Redes", ln=True, align="C")
+    pdf.ln(10)
+    pdf.image("grafico5.png", x=10, y=30, w=180)
+    pdf.ln(90)
+    pdf.image("grafico6.png", x=10, y=pdf.get_y(), w=180)
+
+    # Tabela final
+    pdf.add_page()
     pdf.set_font("Arial", size=10)
     pdf.cell(200, 10, txt="Exemplo de Dados:", ln=True)
-
     if tabela_resumo is None:
         tabela_resumo = df.head(10)
-
     for i, row in tabela_resumo.iterrows():
         linha = f"{row['sigla_uf']}, {row['rede']}, IDEB: {row['ideb']:.2f}, NSE: {row['nivel_socioeconomico']:.2f}"
         pdf.cell(200, 10, txt=linha, ln=True)
@@ -146,19 +163,54 @@ if page == "Dashboard Principal":
             perc_risco = (escolas_risco / total_escolas) * 100
             resumo_texto = (
             f"Total de escolas analisadas: {total_escolas:,}.\n"
-            f"Número de escolas em risco de evasão: {escolas_risco:,} "
-            f"({perc_risco:.2f}%).\n"
+            f"Número de escolas em risco de evasão: {escolas_risco:,} ({perc_risco:.2f}%).\n"
             "Esses dados refletem a situação atual considerando IDEB, nível socioeconômico, "
             "histórico de evasão e outros fatores analisados pelo modelo preditivo."
             )
 
-            gerar_pdf(df, fig_uf, fig_rede, resumo_texto)
+        # Gerar os gráficos das outras páginas
+        importances = model.feature_importances_
+        ranking_df = pd.DataFrame({
+            "Fator": load_columns,
+            "Importância": importances
+        }).sort_values(by="Importância", ascending=False)
 
-            with open("relatorio_evasao.pdf", "rb") as f:
-                st.download_button("📥 Baixar PDF", f, file_name="relatorio_evasao.pdf", mime="application/pdf")
+        fig_importance = px.bar(
+            ranking_df.head(15),
+            x="Fator", y="Importância",
+            title="Fatores que mais influenciam a evasão escolar",
+            labels={"Importância": "Importância (modelo)", "Fator": "Variável"}
+        )
 
-        except Exception as e:
-            st.error(f"Erro ao gerar PDF: {str(e)}")
+        correlations = df[["ideb", "indicador_rendimento", "nivel_socioeconomico", "nota_saeb_media_padronizada", "taxa_evasao_historica", "alta_evasao"]].corr()["alta_evasao"].abs().sort_values(ascending=False)
+        fig_corr = px.bar(
+            x=correlations.index,
+            y=correlations.values,
+            title="Correlação com risco de evasão",
+            labels={"x": "Fator", "y": "Correlação (abs)"}
+        )
+
+        df_rede = df.groupby("rede").agg({
+            "alta_evasao": ["sum", "mean"],
+            "taxa_evasao_historica": "mean",
+            "ideb": "mean",
+            "nivel_socioeconomico": "mean",
+            "id_escola": "count"
+        }).round(2)
+        df_rede.columns = ["Escolas_Risco", "Percentual_Risco", "Taxa_Media_Evasao", "IDEB_Medio", "NSE_Medio", "Total_Escolas"]
+        df_rede = df_rede.reset_index()
+
+        fig_comp1 = px.bar(df_rede, x="rede", y="Percentual_Risco", title="Percentual de Risco por Rede")
+        fig_comp2 = px.bar(df_rede, x="rede", y="IDEB_Medio", title="IDEB Médio por Rede")
+
+        # Chamar PDF com todos os gráficos
+        gerar_pdf(df, fig_uf, fig_rede, fig_importance, fig_corr, fig_comp1, fig_comp2, resumo_texto)
+
+        with open("relatorio_evasao.pdf", "rb") as f:
+            st.download_button("📥 Baixar PDF", f, file_name="relatorio_evasao.pdf", mime="application/pdf")
+
+    except Exception as e:
+        st.error(f"Erro ao gerar PDF: {str(e)}")
     
 
 elif page == "Mapa de Risco":
