@@ -16,10 +16,13 @@ ProjetoDash/
 ├── model_training.py               # Script de treinamento do modelo
 ├── dashboard.py                    # Dashboard Streamlit
 ├── test_system.py                  # Testes de validação
+├── Dockerfile                      # Imagem Docker 
+├── auth.py                         # Regras de Usuario
+├── feature_columns.pkl             # Colunas do Modelo
+├── .github/workflows               # Teste do Sistema
+├── .devcontainer                   # Informações sobre o sistema
 ├── processed_data.csv              # Dados processados
 ├── evasion_model.joblib            # Modelo treinado
-├── relatorio_evasao_escolar.md     # Relatório em Markdown
-├── relatorio_evasao_escolar.pdf    # Relatório em PDF
 └── README.md                       # Este arquivo
 ```
 
@@ -28,18 +31,25 @@ ProjetoDash/
 ### Python 3.11+
 ### Bibliotecas necessárias:
 - pandas
-- scikit-learn
+- scikit-learn  # 👈 VERSÃO COMPATÍVEL
 - streamlit
 - plotly
 - joblib
 - matplotlib
 - seaborn
+- numpy
+- fpdf
+- pymongo[srv]
+- pymongo
+- folium
+- streamlit-folium
+- python-dotenv
 
 ## Instalação e Configuração
 
 ### 1. Instalar dependências:
 ```bash
-pip install pandas scikit-learn streamlit plotly joblib matplotlib seaborn
+pip install -r requirements.txt
 ```
 
 ### 2. Executar preparação dos dados:
@@ -105,14 +115,13 @@ streamlit run dashboard.py --server.port 8501 --server.address 0.0.0.0
 ## Modelo de Machine Learning
 
 - **Algoritmo:** Gradient Boosting Classifier
-- **Variável alvo:** Alta evasão (>limiar dinâmico baseado na mediana)
+- **Variável alvo:** Alta evasão 
 
 ## Arquivos de Saída
 
 1. **processed_data.csv** - Dados limpos e processados
 2. **evasion_model.joblib** - Modelo treinado
-3. **relatorio_evasao_escolar.pdf** - Relatório completo
-4. **Dashboard interativo** - Interface web
+3. **Dashboard interativo** - Interface web
 
 ## Como Usar
 
@@ -158,9 +167,12 @@ probability = model.predict_proba(data_encoded)[:, 1]
 
 Para dúvidas ou problemas:
 1. Verifique se todas as dependências estão instaladas
-2. Confirme que os arquivos de dados estão no diretório correto
-3. Execute os testes com `python test_system.py`
-4. Ou entre em contato ao email brendofcg.2013@gmail.com
+   ```python
+   pip list
+   ```
+3. Confirme que os arquivos de dados estão no diretório correto
+4. Execute os testes com `python test_system.py`
+5. Ou entre em contato ao email brendofcg.2013@gmail.com
 
 ## Licença
 
