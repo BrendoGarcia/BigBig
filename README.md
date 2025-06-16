@@ -44,7 +44,7 @@ ProjetoDash/
 - folium
 - streamlit-folium
 - python-dotenv
-
+- kaleido
 ## Instalação e Configuração
 
 ### 1. Instalar dependências:
