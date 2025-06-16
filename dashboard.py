@@ -21,7 +21,7 @@ if "mfa_passed" not in st.session_state or not st.session_state["mfa_passed"]:
 def salvar_grafico(fig, filename):
     pio.write_image(fig, filename, format='png', width=800, height=500)
 
-def gerar_pdf(df, fig1, fig2):
+def gerar_pdf(df, fig1, fig2, resumo_texto, tabela_resumo=None):
     salvar_grafico(fig1, "grafico1.png")
     salvar_grafico(fig2, "grafico2.png")
 
@@ -30,17 +30,24 @@ def gerar_pdf(df, fig1, fig2):
     pdf.set_font("Arial", size=12)
     pdf.cell(200, 10, txt="Relatório de Evasão Escolar", ln=True, align="C")
 
-    # Adicionar gráficos
+    # Texto com resumo
     pdf.ln(10)
-    pdf.image("grafico1.png", x=10, y=30, w=180)
+    pdf.multi_cell(0, 10, resumo_texto)
+
+    # Gráficos
+    pdf.image("grafico1.png", x=10, y=40, w=180)
     pdf.ln(80)
-    pdf.image("grafico2.png", x=10, y=120, w=180)
+    pdf.image("grafico2.png", x=10, y=130, w=180)
+    pdf.ln(85)
 
     # Adicionar tabela com dados (exemplo limitado)
-    pdf.ln(90)
     pdf.set_font("Arial", size=10)
     pdf.cell(200, 10, txt="Exemplo de Dados:", ln=True)
-    for i, row in df.head(10).iterrows():
+
+    if tabela_resumo is None:
+        tabela_resumo = df.head(10)
+
+    for i, row in tabela_resumo.iterrows():
         linha = f"{row['sigla_uf']}, {row['rede']}, IDEB: {row['ideb']:.2f}, NSE: {row['nivel_socioeconomico']:.2f}"
         pdf.cell(200, 10, txt=linha, ln=True)
 
@@ -133,12 +140,25 @@ if page == "Dashboard Principal":
     st.markdown("### 📄 Gerar Relatório em PDF")
 
     if st.button("Gerar Relatório"):
-        try:
-            gerar_pdf(df, fig_uf, fig_rede)
-            with open("relatorio_evasao.pdf", "rb") as f:
-                st.download_button("📥 Baixar PDF", f, file_name="relatorio_evasao.pdf", mime="application/pdf")
-        except Exception as e:
-            st.error(f"Erro ao gerar PDF: {str(e)}")
+    try:
+        escolas_risco = df[df["alta_evasao"] == 1].shape[0]
+        total_escolas = df.shape[0]
+        perc_risco = (escolas_risco / total_escolas) * 100
+        resumo_texto = (
+            f"Total de escolas analisadas: {total_escolas:,}.\n"
+            f"Número de escolas em risco de evasão: {escolas_risco:,} "
+            f"({perc_risco:.2f}%).\n"
+            "Esses dados refletem a situação atual considerando IDEB, nível socioeconômico, "
+            "histórico de evasão e outros fatores analisados pelo modelo preditivo."
+        )
+
+        gerar_pdf(df, fig_uf, fig_rede, resumo_texto)
+
+        with open("relatorio_evasao.pdf", "rb") as f:
+            st.download_button("📥 Baixar PDF", f, file_name="relatorio_evasao.pdf", mime="application/pdf")
+
+    except Exception as e:
+        st.error(f"Erro ao gerar PDF: {str(e)}")
     
 
 elif page == "Mapa de Risco":
