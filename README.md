@@ -31,7 +31,7 @@ ProjetoDash/
 ### Python 3.11+
 ### Bibliotecas necessárias:
 - pandas
-- scikit-learn  # 👈 VERSÃO COMPATÍVEL
+- scikit-learn  
 - streamlit
 - plotly
 - joblib
