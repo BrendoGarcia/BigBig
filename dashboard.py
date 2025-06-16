@@ -168,49 +168,49 @@ if page == "Dashboard Principal":
             "histórico de evasão e outros fatores analisados pelo modelo preditivo."
             )
 
-        # Gerar os gráficos das outras páginas
-        importances = model.feature_importances_
-        ranking_df = pd.DataFrame({
+            # Gerar os gráficos das outras páginas
+            importances = model.feature_importances_
+            ranking_df = pd.DataFrame({
             "Fator": load_columns,
             "Importância": importances
-        }).sort_values(by="Importância", ascending=False)
+            }).sort_values(by="Importância", ascending=False)
 
-        fig_importance = px.bar(
+            fig_importance = px.bar(
             ranking_df.head(15),
             x="Fator", y="Importância",
             title="Fatores que mais influenciam a evasão escolar",
             labels={"Importância": "Importância (modelo)", "Fator": "Variável"}
-        )
+            )
 
-        correlations = df[["ideb", "indicador_rendimento", "nivel_socioeconomico", "nota_saeb_media_padronizada", "taxa_evasao_historica", "alta_evasao"]].corr()["alta_evasao"].abs().sort_values(ascending=False)
-        fig_corr = px.bar(
+            correlations = df[["ideb", "indicador_rendimento", "nivel_socioeconomico", "nota_saeb_media_padronizada", "taxa_evasao_historica", "alta_evasao"]].corr()["alta_evasao"].abs().sort_values(ascending=False)
+            fig_corr = px.bar(
             x=correlations.index,
             y=correlations.values,
             title="Correlação com risco de evasão",
             labels={"x": "Fator", "y": "Correlação (abs)"}
-        )
+            )
 
-        df_rede = df.groupby("rede").agg({
+            df_rede = df.groupby("rede").agg({
             "alta_evasao": ["sum", "mean"],
             "taxa_evasao_historica": "mean",
             "ideb": "mean",
             "nivel_socioeconomico": "mean",
             "id_escola": "count"
-        }).round(2)
-        df_rede.columns = ["Escolas_Risco", "Percentual_Risco", "Taxa_Media_Evasao", "IDEB_Medio", "NSE_Medio", "Total_Escolas"]
-        df_rede = df_rede.reset_index()
+            }).round(2)
+            df_rede.columns = ["Escolas_Risco", "Percentual_Risco", "Taxa_Media_Evasao", "IDEB_Medio", "NSE_Medio", "Total_Escolas"]
+            df_rede = df_rede.reset_index()
 
-        fig_comp1 = px.bar(df_rede, x="rede", y="Percentual_Risco", title="Percentual de Risco por Rede")
-        fig_comp2 = px.bar(df_rede, x="rede", y="IDEB_Medio", title="IDEB Médio por Rede")
+            fig_comp1 = px.bar(df_rede, x="rede", y="Percentual_Risco", title="Percentual de Risco por Rede")
+            fig_comp2 = px.bar(df_rede, x="rede", y="IDEB_Medio", title="IDEB Médio por Rede")
 
-        # Chamar PDF com todos os gráficos
-        gerar_pdf(df, fig_uf, fig_rede, fig_importance, fig_corr, fig_comp1, fig_comp2, resumo_texto)
+            # Chamar PDF com todos os gráficos
+            gerar_pdf(df, fig_uf, fig_rede, fig_importance, fig_corr, fig_comp1, fig_comp2, resumo_texto)
 
-        with open("relatorio_evasao.pdf", "rb") as f:
-            st.download_button("📥 Baixar PDF", f, file_name="relatorio_evasao.pdf", mime="application/pdf")
+            with open("relatorio_evasao.pdf", "rb") as f:
+                st.download_button("📥 Baixar PDF", f, file_name="relatorio_evasao.pdf", mime="application/pdf")
 
-    except Exception as e:
-        st.error(f"Erro ao gerar PDF: {str(e)}")
+        except Exception as e:
+            st.error(f"Erro ao gerar PDF: {str(e)}")
     
 
 elif page == "Mapa de Risco":
@@ -419,4 +419,3 @@ if page == "🔒 Painel de Auditoria":
 # Rodapé
 st.markdown("---")
 st.markdown("**Predição de Evasão Escolar** - Sistema desenvolvido para identificar escolas com risco crítico de evasão no ensino médio.")
-
