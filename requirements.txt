@@ -1,5 +1,5 @@
 pandas
-scikit-learn  # 👈 VERSÃO COMPATÍVEL
+scikit-learn  
 streamlit
 plotly
 joblib
