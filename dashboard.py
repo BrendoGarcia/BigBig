@@ -323,7 +323,7 @@ elif page == "Simulador de Cenários":
         ideb_sim = st.slider("IDEB", min_value=0.0, max_value=10.0, value=5.0, step=0.1)
         nse_sim = st.slider("Nível Socioeconômico", min_value=10.0, max_value=70.0, value=50.0, step=0.1)
         taxa_historica = st.slider("Média de Evasão Historica", min_value=00.1, max_value=100.0, value=20.0, step=00.1)
-        inse_quantidade_alunos = st.slider("Quantidade de alunos", min_value=0001, max_value=1000, value=100, step=0001)
+        inse_quantidade_alunos = st.slider("Quantidade de alunos", min_value=1, max_value=1000, value=100, step=0001)
     with col2:
         taxa_aprovacao = st.slider("Taxa de aprovados", min_value=01.0, max_value=100.0, value=10.0, step=01.0)
         nota_saeb_matematica = st.slider("Nota Saeb Matematica", min_value=0, max_value=10, value=7, step=1)
