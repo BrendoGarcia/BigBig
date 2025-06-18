@@ -340,7 +340,6 @@ elif page == "Simulador de Cenários":
         "nota_saeb_media_padronizada" : [nota_saeb_media_padronizada],
         "infraestrutura_percentual" : [infraestrutura_percentual],
         "nivel_socioeconomico": [nse_sim],
-        "sigla_uf": [uf_sim],
         "rede": [rede_sim],
         "taxa_evasao_historica": [taxa_historica],
         "taxa_aprovacao" : [taxa_aprovacao],
