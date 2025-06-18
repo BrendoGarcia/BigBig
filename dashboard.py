@@ -331,11 +331,13 @@ elif page == "Simulador de Cenários":
         nota_saeb_matematica = st.slider("Nota Saeb Matematica", min_value=10, max_value=1000, value=10, step=1)
         nota_saeb_lingua_portuguesa = st.slider("Nota Saeb Portugues", min_value=10, max_value=1000, value=10, step=1)
         rede_sim = st.selectbox("Rede", df["rede"].unique())
+        sigla_uf = st.selectbox("Estado", df["sigla_uf"].unique())
     
     # Preparar dados para predição
     # Criar um dataframe com os valores simulados
     # Criar o dataframe com os valores simulados
     sim_data = pd.DataFrame({
+        "sigla_uf" : [sigla_uf],
         "ideb": [ideb_sim],
         "nota_saeb_media_padronizada" : [nota_saeb_media_padronizada],
         "infraestrutura_percentual" : [infraestrutura_percentual],
