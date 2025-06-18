@@ -324,11 +324,12 @@ elif page == "Simulador de Cenários":
         nse_sim = st.slider("Nível Socioeconômico", min_value=10.0, max_value=70.0, value=50.0, step=0.1)
         taxa_historica = st.slider("Média de Evasão Historica", min_value=00.1, max_value=100.0, value=20.0, step=00.1)
         inse_quantidade_alunos = st.slider("Quantidade de alunos", min_value=1, max_value=1000, value=100, step=1)
+        nota_saeb_media_padronizada = st.slider("Media Saeb escolar", min_value=10, max_value=1000, value=10, step=1)
     with col2:
+        infraestrutura_percentual = st.slider("Infrestrutura escolar em %", min_value=01.0, max_value=100.0, value=10.0, step=00.1)
         taxa_aprovacao = st.slider("Taxa de aprovados", min_value=01.0, max_value=100.0, value=10.0, step=01.0)
-        nota_saeb_matematica = st.slider("Nota Saeb Matematica", min_value=0, max_value=10, value=7, step=1)
-        nota_saeb_lingua_portuguesa = st.slider("Nota Saeb Portugues", min_value=1, max_value=10, value=7, step=1)
-        uf_sim = st.selectbox("Estado", df["sigla_uf"].unique())
+        nota_saeb_matematica = st.slider("Nota Saeb Matematica", min_value=10, max_value=1000, value=10, step=1)
+        nota_saeb_lingua_portuguesa = st.slider("Nota Saeb Portugues", min_value=10, max_value=1000, value=10, step=1)
         rede_sim = st.selectbox("Rede", df["rede"].unique())
     
     # Preparar dados para predição
@@ -336,6 +337,8 @@ elif page == "Simulador de Cenários":
     # Criar o dataframe com os valores simulados
     sim_data = pd.DataFrame({
         "ideb": [ideb_sim],
+        "nota_saeb_media_padronizada" : [nota_saeb_media_padronizada],
+        "infraestrutura_percentual" : [infraestrutura_percentual],
         "nivel_socioeconomico": [nse_sim],
         "sigla_uf": [uf_sim],
         "rede": [rede_sim],
