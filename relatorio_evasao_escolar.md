@@ -70,11 +70,11 @@ O pipeline de processamento incluiu:
 ### Distribuição Geográfica do Risco
 
 **Estados com maior número de escolas em risco:**
-1. São Paulo: ~12.000 escolas
-2. Minas Gerais: ~8.000 escolas
-3. Bahia: ~7.000 escolas
-4. Rio Grande do Sul: ~5.000 escolas
-5. Paraná: ~4.000 escolas
+1. Minas Gerais – 7.605 escolas
+2. Maranhão – 5.146 escolas
+3. Paraná – 4.819 escolas
+4. Pará – 4.806 escolas
+5. Rio de Janeiro – 4.717 escolas
 
 ### Análise por Rede de Ensino
 
