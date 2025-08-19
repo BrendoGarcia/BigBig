@@ -100,14 +100,15 @@ streamlit run dashboard.py --server.port 8501 --server.address 0.0.0.0
 ## Dados Utilizados
 
 ### Fontes:
-1. **IDEB 2021** - Índice de Desenvolvimento da Educação Básica
-2. **Nível Socioeconômico 2015** - INSE das escolas
-3. **Taxa de Evasão 2021** - Dados de abandono escolar por UF/rede
+1. **IDEB ** - Índice de Desenvolvimento da Educação Básica
+2. **Nível Socioeconômico ** - INSE das escolas
+3. **Taxa de Evasão ** - Dados de abandono escolar por UF/rede e por escolas
 
 ### Features do Modelo:
 - IDEB da escola
 - Nível socioeconômico
 - Taxa de evasão histórica regional
+- Taxa de evasão das escolas
 - Estado (UF)
 - Rede de ensino (pública/privada)
 - Latitude e Longitude
