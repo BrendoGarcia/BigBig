@@ -15,7 +15,7 @@ Este relatório apresenta os resultados do sistema de predição de evasão esco
 - **64.630 escolas identificadas com risco crítico** de evasão para 2025
 - **Taxa média de evasão histórica:** 6,56%
 - **IDEB médio das escolas analisadas:** 5,16
-- **Acurácia do modelo:** 100% nos dados de teste
+- **Acurácia do modelo:** 64% nos dados de teste
 - **Cobertura nacional:** 27 estados brasileiros analisados
 
 ---
