@@ -12,9 +12,9 @@ Este relatório apresenta os resultados do sistema de predição de evasão esco
 
 ### Principais Descobertas
 
-- **64.630 escolas identificadas com risco crítico** de evasão para 2025
-- **Taxa média de evasão histórica:** 6,56%
-- **IDEB médio das escolas analisadas:** 5,16
+- **986.568 escolas identificadas com risco crítico** de evasão para 2025
+- **Taxa média de evasão histórica:** 7,19%
+- **IDEB médio das escolas analisadas:** 4,59
 - **Acurácia do modelo:** 64% nos dados de teste
 - **Cobertura nacional:** 27 estados brasileiros analisados
 
@@ -27,7 +27,7 @@ Este relatório apresenta os resultados do sistema de predição de evasão esco
 O sistema integra três principais fontes de dados educacionais:
 
 1. **IDEB (Índice de Desenvolvimento da Educação Básica)** - 2007 até 2023:
-   - 131.021 escolas com dados de qualidade educacional
+   - 2,002,029 escolas com dados de qualidade educacional
    - Indicador que combina fluxo escolar e desempenho em avaliações
 
 2. **Nível Socioeconômico (INSE)** - 2014 até 2015:
@@ -70,23 +70,24 @@ O pipeline de processamento incluiu:
 ### Distribuição Geográfica do Risco
 
 **Estados com maior número de escolas em risco:**
-1. Minas Gerais – 7.605 escolas
-2. Maranhão – 5.146 escolas
-3. Paraná – 4.819 escolas
-4. Pará – 4.806 escolas
-5. Rio de Janeiro – 4.717 escolas
+1. Minas Gerais – 202.138 escolas 
+2. Rio Grande do Sul – 137.757 escolas 
+3. Rio de Janeiro – 115.618 escolas 
+4. Maranhão – 111.213 escolas  
+5. Pará – 100.603 escolas
 
 ### Análise por Rede de Ensino
 
 **Rede Pública:**
 - 99,95% das escolas em risco
 - Representa a grande maioria das instituições analisadas
-- IDEB médio: 5,16
+- IDEB médio: 4,59
 
 **Rede Privada:**
 - 0,05% das escolas em risco
 - Menor representatividade no conjunto de dados
 - Geralmente apresenta melhores indicadores socioeconômicos
+- IDEB médio: 4,79
 
 ### Fatores de Risco Identificados
 
@@ -145,7 +146,7 @@ Infelizmente por motivos finaceitos não conseguimos manter a aplicação Online
    - ✓ Distribuição adequada das probabilidades
 
 2. **Teste de Qualidade dos Dados**
-   - ✓ 131.021 registros processados sem valores ausentes
+   - ✓ 2.002.029 registros processados sem valores ausentes
    - ✓ Distribuição balanceada da variável alvo (49,33% em risco)
    - ✓ Estatísticas descritivas dentro dos parâmetros esperados
 
