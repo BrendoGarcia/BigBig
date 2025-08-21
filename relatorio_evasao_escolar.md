@@ -191,7 +191,7 @@ Infelizmente por motivos finaceitos não conseguimos manter a aplicação Online
 
 ## Conclusões
 
-O sistema de predição de evasão escolar desenvolvido demonstra alta capacidade de identificação de escolas em risco, com **64.630 instituições classificadas como críticas para 2025**. A ferramenta oferece uma interface intuitiva para gestores educacionais e tomadores de decisão, permitindo:
+O sistema de predição de evasão escolar desenvolvido demonstra alta capacidade de identificação de escolas em risco, com **986.568 instituições classificadas como críticas para 2025**. A ferramenta oferece uma interface intuitiva para gestores educacionais e tomadores de decisão, permitindo:
 
 - **Identificação proativa** de escolas em risco
 - **Análise comparativa** entre diferentes regiões e redes
