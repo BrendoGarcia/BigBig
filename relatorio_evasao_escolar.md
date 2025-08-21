@@ -8,7 +8,7 @@
 
 ## Resumo Executivo
 
-Este relatório apresenta os resultados do sistema de predição de evasão escolar no ensino médio desenvolvido para identificar escolas com risco crítico de abandono estudantil. O sistema utiliza técnicas de Machine Learning, especificamente o algoritmo Gradient Boosting Classifier, para analisar dados educacionais e socioeconômicos de 131.021 escolas brasileiras.
+Este relatório apresenta os resultados do sistema de predição de evasão escolar no ensino médio desenvolvido para identificar escolas com risco crítico de abandono estudantil. O sistema utiliza técnicas de Machine Learning, especificamente o algoritmo Gradient Boosting Classifier, para analisar dados educacionais e socioeconômicos de 2,002,029 escolas brasileiras.
 
 ### Principais Descobertas
 
